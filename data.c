@@ -1,68 +1,123 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Define the linked list
-    StructNode{
-        int data;
-        struct Node* next; 
-    };
+// Node structure for linked list
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
 // Create a new node
-    void display(StructNode* CreateNode(int data)){
-        struct Node* new_Node=(struct Node*)malloc(sizeof(struct Node));
-        new_Node->data = data;
-        new_Node->next = NULL;
-    }    
-
-// Create function to merge two sorted linked link
-     void merge(struct Node*list1,struct Node*list2,struct Node**head_ref){
-        struct Node*head;
-        head_ref=NULL;
-             if(!list1) return list2;
-             if(!list2) return list1;
-             if(list1-> data <list2-> data){
-                tail->next = list1
-                list1 = list1 ->next;
-                tail = tail ->next;
-             } else{
-                tail->next = list2;
-                list2 = list2 ->next;
-                tail = tail ->next;
-             }
-     }
-
- // Function to print the elements of a linked list    
-    void printlist(StructNode*node){
-        while(node!=NULL){
-            printif("%d->,"node->data);
-            node= node-> next;
-        }
-        printf("NULL\n");
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) {
+        printf(stderr, "Memory allocation failed\n");
+        exit(1);
     }
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
 
-    printf("Enter elements for list1:"):
-    struct Node*new_Node=(struct Node*)malloc(sizeof(struct Node));
-    new_Node-> data
-    new_Node-> next= NULL;
-        if(list==NULL){
-            list 1= new_Node;
-        } else{
-            list 1->next=new_Node;
-        }
+// Insert node at the end of the list
+void insertNode(Node** head, int data) {
+    Node* newNode = createNode(data);
+    
+    if (*head == NULL) {
+        *head = newNode;
+        return;
     }
-    printf("Enter elements for list2:");
-    struct Node*new_Node=(struct Node)malloc(sizeof(struct Node));
-    new_Node-> data;
-    new_Node-> next= NULL;
-         if(list2==NULL){
-            list 2=new_Node;
+    
+    Node* current = *head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = newNode;
+}
+
+// Merge two sorted linked lists
+Node* mergeSortedLists(Node* list1, Node* list2) {
+    // If one list is empty, return the other
+    if (list1 == NULL) return list2;
+    if (list2 == NULL) return list1;
+    
+    Node* mergedList = NULL;
+    Node* current;
+    
+    // Determine the head of the merged list
+    if (list1->data <= list2->data) {
+        mergedList = list1;
+        list1 = list1->next;
+    } else {
+        mergedList = list2;
+        list2 = list2->next;
+    }
+    
+    current = mergedList;
+    
+    // Merge remaining nodes
+    while (list1 && list2) {
+        if (list1->data <= list2->data) {
+            current->next = list1;
+            list1 = list1->next;
         } else {
-            list2->next=new_Node;
+            current->next = list2;
+            list2 = list2->next;
         }
+        current = current->next;
     }
+    
+    // Attach any remaining nodes
+    if (list1) current->next = list1;
+    if (list2) current->next = list2;
+    
+    return mergedList;
+}
 
-    struct Node*merge list = merge(list1,list2);
-    printf("Merge List:\n");
-    printList(mergeList);
-     
-    return o;
+// Print linked list
+void printList(Node* head) {
+    while (head != NULL) {
+        printf("%d -> ", head->data);
+        head = head->next;
     }
+    printf("NULL\n");
+}
+
+// Free allocated memory
+void freeList(Node* head) {
+    Node* temp;
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    Node *list1 = NULL, *list2 = NULL, *mergedList;
+    
+    // Example sorted lists
+    insertNode(&list1, 1);
+    insertNode(&list1, 3);
+    insertNode(&list1, 5);
+    
+    insertNode(&list2, 2);
+    insertNode(&list2, 4);
+    insertNode(&list2, 6);
+    
+    printf("List 1: ");
+    printList(list1);
+    
+    printf("List 2: ");
+    printList(list2);
+    
+    mergedList = mergeSortedLists(list1, list2);
+    
+    printf("Merged List: ");
+    printList(mergedList);
+    
+    // Free memory
+    freeList(mergedList);
+    
+    return 0;
+}
